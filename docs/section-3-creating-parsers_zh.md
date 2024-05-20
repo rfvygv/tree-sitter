@@ -242,30 +242,29 @@ increment(n) == n + 1
 tree-sitter test -f 'Return statements'
 ```
 
-The recommendation is to be comprehensive in adding tests. If it's a visible node, add it to a test file in your `test/corpus` directory. It's typically a good idea to test all of the permutations of each language construct. This increases test coverage, but doubly acquaints readers with a way to examine expected outputs and understand the "edges" of a language.
 建议是尽可能全面地添加测试。如果它是一个可见的节点，请将其添加到 `test/corpus` 目录中的测试文件中。通常，测试每种语言结构的所有排列组合是个好主意。这不仅增加了测试覆盖率，还让读者更熟悉如何检查预期输出并了解语言的"边界"。
 
-#### Attributes
+#### 属性
 
-Tests can be annotated with a few `attributes`. Attributes must be put in the header, below the test name, and start with a `:`.
-A couple of attributes also take in a parameter, which require the use of parenthesis.
+测试可以用一些`attributes`进行注释。属性必须放在标题中，位于测试名称下方，并以`:`开头。
+有些属性还需要参数，这些参数需要使用括号括起来。
 
-**Note**: If you'd like to supply in multiple parameters, e.g. to run tests on multiple platforms or to test multiple languages, you can repeat the attribute on a new line.
+**注意**：如果你想提供多个参数，例如在多个平台上运行测试或测试多种语言，你可以在新行上重复该属性。
 
-The following attributes are available:
+可用的属性如下：
 
-- `:skip` — This attribute will skip the test when running `tree-sitter test`.
-  This is useful when you want to temporarily disable running a test without deleting it.
-- `:error` — This attribute will assert that the parse tree contains an error. It's useful to just validate that a certain input is invalid without displaying the whole parse tree, as such you should omit the parse tree below the `---` line.
-- `:fail-fast` — This attribute will stop the testing additional tests if the test marked with this attribute fails.
-- `:language(LANG)` — This attribute will run the tests using the parser for the specified language. This is useful for multi-parser repos, such as XML and DTD, or Typescript and TSX. The default parser will be the first entry in the `tree-sitter` field in the root `package.json`, so having a way to pick a second or even third parser is useful.
-- `:platform(PLATFORM)` — This attribute specifies the platform on which the test should run. It is useful to test platform-specific behavior (e.g. Windows newlines are different from Unix). This attribute must match up with Rust's [`std::env::consts::OS`](https://doc.rust-lang.org/std/env/consts/constant.OS.html).
+- `:skip` — 这个属性将在运行 tree-sitter test 时跳过测试。
+  当你想临时禁用运行某个测试而不删除它时，这个属性很有用。
+- `:error` — 这个属性将断言解析树包含错误。这对验证某些输入无效很有用，而无需显示整个解析树，因此你应该在`---`行下省略解析树。
+- `:fail-fast` — 如果带有此属性的测试失败，将停止测试其他测试。
+- `:language(LANG)` — 这个属性将使用指定语言的解析器运行测试。对于多解析器仓库（如 XML 和 DTD，或 TypeScript 和 TSX）很有用。默认解析器将是根 `package.json` 中 `tree-sitter` 字段的第一个条目，因此能够选择第二或第三个解析器是有用的。
+- `:platform(PLATFORM)` — 这个属性指定测试运行的平台。它对于测试平台特定的行为很有用（例如，Windows 的换行符与 Unix 不同）。 此属性必须与 Rust 的 [`std::env::consts::OS`](https://doc.rust-lang.org/std/env/consts/constant.OS.html)相匹配。
 
-Examples using attributes:
+使用属性的示例：
 
 ```text
 =========================
-Test that will be skipped
+将被跳过的测试
 :skip
 =========================
 
@@ -274,7 +273,7 @@ int main() {}
 -------------------------
 
 ====================================
-Test that will run on Linux or macOS
+将在 Linux 或 macOS 上运行的测试
 
 :platform(linux)
 :platform(macos)
@@ -285,7 +284,7 @@ int main() {}
 ------------------------------------
 
 ========================================================================
-Test that expects an error, and will fail fast if there's no parse error
+预期有错误的测试，如果没有解析错误将快速失败
 :fail-fast
 :error
 ========================================================================
@@ -295,7 +294,7 @@ int main ( {}
 ------------------------------------------------------------------------
 
 =================================================
-Test that will parse with both Typescript and TSX
+将使用 TypeScript 和 TSX 解析的测试
 :language(typescript)
 :language(tsx)
 =================================================
@@ -305,17 +304,17 @@ console.log('Hello, world!');
 -------------------------------------------------
 ```
 
-#### Automatic Compilation
+#### 自动编译
 
-You might notice that the first time you run `tree-sitter test` after regenerating your parser, it takes some extra time. This is because Tree-sitter automatically compiles your C code into a dynamically-loadable library. It recompiles your parser as-needed whenever you update it by re-running `tree-sitter generate`.
+你可能会注意到，在重新生成解析器后第一次运行 `tree-sitter test` 时，会花费一些额外的时间。这是因为 Tree-sitter 会自动将你的 C 代码编译成一个可动态加载的库。每当你通过重新运行 `tree-sitter generate` 更新解析器时，它会根据需要重新编译你的解析器。
 
-#### Syntax Highlighting Tests
+#### 语法高亮测试
 
-The `tree-sitter test` command will *also* run any syntax highlighting tests in the `test/highlight` folder, if it exists. For more information about syntax highlighting tests, see [the syntax highlighting page][syntax-highlighting-tests].
+`tree-sitter test` 命令还会运行 `test/highlight` 文件夹中的任何语法高亮测试（如果存在）。有关语法高亮测试的更多信息，请参见[the syntax highlighting page][syntax-highlighting-tests]。
 
-### Command: `parse`
+### 命令: `parse`
 
-You can run your parser on an arbitrary file using `tree-sitter parse`. This will print the resulting the syntax tree, including nodes' ranges and field names, like this:
+你可以使用 `tree-sitter parse` 在任意文件上运行解析器。这将打印出结果语法树，包括节点的范围和字段名称，如下所示：
 
 ```text
 (source_file [0, 0] - [3, 0]
@@ -329,26 +328,29 @@ You can run your parser on an arbitrary file using `tree-sitter parse`. This wil
           (int_literal [1, 9] - [1, 10]))))))
 ```
 
-You can pass any number of file paths and glob patterns to `tree-sitter parse`, and it will parse all of the given files. The command will exit with a non-zero status code if any parse errors occurred. You can also prevent the syntax trees from being printed using the `--quiet` flag. Additionally, the `--stat` flag prints out aggregated parse success/failure information for all processed files. This makes `tree-sitter parse` usable as a secondary testing strategy: you can check that a large number of files parse without error:
+你可以将任意数量的文件路径和全局模式传递给 `tree-sitter parse`，它会解析所有给定的文件。如果发生任何解析错误，该命令将以非零状态码退出。你还可以使用 `--quiet` 标志阻止语法树的打印。此外，`--stat` 标志会打印出所有处理文件的聚合解析成功/失败信息。这使得 `tree-sitter parse` 可用作一种辅助测试策略：你可以检查大量文件解析是否没有错误：
 
 ```sh
 tree-sitter parse 'examples/**/*.go' --quiet --stat
 ```
 
-### Command: `highlight`
+### 命令: `highlight`
 
-You can run syntax highlighting on an arbitrary file using `tree-sitter highlight`. This can either output colors directly to your terminal using ansi escape codes, or produce HTML (if the `--html` flag is passed). For more information, see [the syntax highlighting page][syntax-highlighting].
+你可以使用 `tree-sitter highlight` 在任意文件上运行语法高亮。这可以直接使用 ansi 转义码将颜色输出到终端，或者如果传递 `--html` 标志，则生成 HTML。更多信息请参见[the syntax highlighting page][syntax-highlighting]。
 
-### The Grammar DSL
+### 语法 DSL
 
-The following is a complete list of built-in functions you can use in your `grammar.js` to define rules. Use-cases for some of these functions will be explained in more detail in later sections.
+以下是你在 `grammar.js` 中定义规则时可以使用的内置函数的完整列表。一些这些函数的用例将在后续部分中更详细地解释。
 
 * **Symbols (the `$` object)** - Every grammar rule is written as a JavaScript function that takes a parameter conventionally called `$`. The syntax `$.identifier` is how you refer to another grammar symbol within a rule. Names starting with `$.MISSING` or `$.UNEXPECTED` should be avoided as they have special meaning for the `tree-sitter test` command.
+* **符号（`$` 对象）** - 每个语法规则都写成一个 JavaScript 函数，接受一个惯例上称为 `$` 的参数。在规则中使用 `$.identifier` 来引用另一个语法符号。名称以 `$.MISSING` 或 `$.UNEXPECTED` 开头的符号应避免使用，因为它们对 `tree-sitter test` 命令有特殊意义。
 * **String and Regex literals** - The terminal symbols in a grammar are described using JavaScript strings and regular expressions. Of course during parsing, Tree-sitter does not actually use JavaScript's regex engine to evaluate these regexes; it generates its own regex-matching logic as part of each parser. Regex literals are just used as a convenient way of writing regular expressions in your grammar.
+* **字符串和正则表达式文字** - 语法中的终端符号使用 JavaScript 字符串和正则表达式来描述。当然，在解析期间，Tree-sitter 实际上并不使用 JavaScript 的正则表达式引擎来评估这些正则表达式；它会为每个解析器生成自己的正则表达式匹配逻辑。正则表达式文字仅用于在语法中方便地编写正则表达式。
 * **Regex Limitations** - Currently, only a subset of the Regex engine is actually
 supported. This is due to certain features like lookahead and lookaround assertions
 not feasible to use in an LR(1) grammar, as well as certain flags being unnecessary
 for tree-sitter. However, plenty of features are supported by default:
+* **正则表达式的限制** - 目前，实际上只支持正则表达式引擎的一个子集。这是因为某些功能（如前瞻和环视断言）在 LR(1) 语法中不可行，以及某些标志对于 Tree-sitter 来说是多余的。然而，许多功能是默认支持的：
 
   * Character classes
   * Character ranges
@@ -358,16 +360,33 @@ for tree-sitter. However, plenty of features are supported by default:
   * Grouping
   * Unicode character escapes
   * Unicode property escapes
+  * 字符类
+  * 字符范围
+  * 字符集
+  * 量词
+  * 交替
+  * 分组
+  * Unicode 字符转义
+  * Unicode 属性转义
 
 * **Sequences : `seq(rule1, rule2, ...)`** - This function creates a rule that matches any number of other rules, one after another. It is analogous to simply writing multiple symbols next to each other in [EBNF notation][ebnf].
+* **序列 : `seq(rule1, rule2, ...)`** - 该函数创建一个匹配任意数量其他规则的规则，一个接一个。它类似于 [EBNF notation][ebnf] 中简单地写多个符号。
 * **Alternatives : `choice(rule1, rule2, ...)`** - This function creates a rule that matches *one* of a set of possible rules. The order of the arguments does not matter. This is analogous to the `|` (pipe) operator in EBNF notation.
+* **替代 : `choice(rule1, rule2, ...)`** - 该函数创建一个规则，匹配一组可能规则中的一个。参数的顺序无关紧要。这类似于 EBNF 记法中的 `|`（管道）运算符。
 * **Repetitions : `repeat(rule)`** - This function creates a rule that matches *zero-or-more* occurrences of a given rule. It is analogous to the `{x}` (curly brace) syntax in EBNF notation.
+* **重复 :  `repeat(rule)`** - 该函数创建一个规则，匹配零次或多次给定规则。它类似于 EBNF 记法中的 {x}（花括号）语法。
 * **Repetitions : `repeat1(rule)`** - This function creates a rule that matches *one-or-more* occurrences of a given rule. The previous `repeat` rule is implemented in terms of `repeat1` but is included because it is very commonly used.
+* **重复 : `repeat1(rule)`** - 该函数创建一个规则，匹配一次或多次给定规则。前面的 `repeat` 规则是以 repeat1 为基础实现的，但它很常用，所以被单独列出。
 * **Options : `optional(rule)`** - This function creates a rule that matches *zero or one* occurrence of a given rule. It is analogous to the `[x]` (square bracket) syntax in EBNF notation.
+* **可选 : `optional(rule)`** - 该函数创建一个规则，匹配零次或一次给定规则。它类似于 EBNF 记法中的 `[x]`（方括号）语法。
 * **Precedence : `prec(number, rule)`** - This function marks the given rule with a numerical precedence which will be used to resolve [*LR(1) Conflicts*][lr-conflict] at parser-generation time. When two rules overlap in a way that represents either a true ambiguity or a *local* ambiguity given one token of lookahead, Tree-sitter will try to resolve the conflict by matching the rule with the higher precedence. The default precedence of all rules is zero. This works similarly to the [precedence directives][yacc-prec] in Yacc grammars.
+* **优先级 : `prec(number, rule)`** - 该函数为给定规则标记一个数值优先级，该优先级将在解析器生成时用于解决 `[LR(1) 冲突][lr-conflict]`。当两个规则以一种代表真正的二义性或给定一个前瞻令牌的局部二义性的方式重叠时，Tree-sitter 将尝试通过匹配优先级较高的规则来解决冲突。所有规则的默认优先级为零。这类似于 Yacc 语法中的`[优先级指令][yacc-prec]`。
 * **Left Associativity : `prec.left([number], rule)`** - This function marks the given rule as left-associative (and optionally applies a numerical precedence). When an LR(1) conflict arises in which all of the rules have the same numerical precedence, Tree-sitter will consult the rules' associativity. If there is a left-associative rule, Tree-sitter will prefer matching a rule that ends *earlier*. This works similarly to [associativity directives][yacc-prec] in Yacc grammars.
+* **左结合 : `prec.left([number], rule)`** - 该函数将给定规则标记为左结合（并可选应用数值优先级）。当出现所有规则具有相同数值优先级的 LR(1) 冲突时，Tree-sitter 将参考规则的结合性。如果存在左结合规则，Tree-sitter 将优先匹配较早结束的规则。这类似于 Yacc 语法中的`[结合性指令][yacc-prec]`。
 * **Right Associativity : `prec.right([number], rule)`** - This function is like `prec.left`, but it instructs Tree-sitter to prefer matching a rule that ends *later*.
+* **右结合 : `prec.right([number], rule)`** - 该函数类似于 `prec.left`，但它指示 Tree-sitter 优先匹配较晚结束的规则。
 * **Dynamic Precedence : `prec.dynamic(number, rule)`** - This function is similar to `prec`, but the given numerical precedence is applied at *runtime* instead of at parser generation time. This is only necessary when handling a conflict dynamically using the `conflicts` field in the grammar, and when there is a genuine *ambiguity*: multiple rules correctly match a given piece of code. In that event, Tree-sitter compares the total dynamic precedence associated with each rule, and selects the one with the highest total. This is similar to [dynamic precedence directives][bison-dprec] in Bison grammars.
+* **动态优先级 : `prec.dynamic(number, rule)`** - 该函数类似于 `prec`，但给定的数值优先级在`运行时`应用，而不是在解析器生成时。只有在使用语法中的 `conflicts` 字段动态处理冲突并且存在真正的二义性时才需要：多个规则正确匹配给定代码片段。在这种情况下，Tree-sitter 将比较与每个规则相关的总动态优先级，并选择总优先级最高的规则。这类似于 Bison 语法中的`[动态优先级指令][bison-dprec]`。
 * **Tokens : `token(rule)`** - This function marks the given rule as producing only
 a single token. Tree-sitter's default is to treat each String or RegExp literal
 in the grammar as a separate token. Each token is matched separately by the lexer
@@ -377,19 +396,34 @@ regular expression) but still have Tree-sitter treat it as a single token.
 The token function will only accept terminal rules, so `token($.foo)` will not work.
 You can think of it as a shortcut for squashing complex rules of strings or regexes
 down to a single token.
+* **标记 : `token(rule)`** - 该函数将给定规则标记为仅产生一个标记。Tree-sitter 的默认设置是将语法中的每个字符串或正则表达式文字视为单独的标记。每个标记由词法分析器单独匹配，并在树中返回为其自己的叶节点。token 函数允许你使用上述函数（而不是单个正则表达式）来表达复杂规则，但仍然让 Tree-sitter 将其视为单个标记。token 函数只接受终端规则，因此 `token($.foo)` 不会工作。你可以将其视为将字符串或正则表达式的复杂规则压缩为单个标记的快捷方式。
 * **Immediate Tokens : `token.immediate(rule)`** - Usually, whitespace (and any other extras, such as comments) is optional before each token. This function means that the token will only match if there is no whitespace.
+* **即时标记 : `token.immediate(rule)`** - 通常，空白（以及任何其他附加内容，如注释）在每个标记之前是可选的。此函数意味着标记将仅在没有空白的情况下匹配。
 * **Aliases : `alias(rule, name)`** - This function causes the given rule to *appear* with an alternative name in the syntax tree. If `name` is a *symbol*, as in `alias($.foo, $.bar)`, then the aliased rule will *appear* as a [named node][named-vs-anonymous-nodes-section] called `bar`. And if `name` is a *string literal*, as in `alias($.foo, 'bar')`, then the aliased rule will appear as an [anonymous node][named-vs-anonymous-nodes-section], as if the rule had been written as the simple string.
+* **别名 : `alias(rule, name)`** - 该函数使给定规则在语法树中以备用名称*出现*。如果 `name` 是*符号*，如 `alias($.foo, $.bar)`，则别名规则将以名为 bar 的[命名节点][named-vs-anonymous-nodes-section]形式*出现*。如果 name 是字符串文字，如 `alias($.foo, 'bar')`，则别名规则将以[匿名节点][named-vs-anonymous-nodes-section]形式出现，就好像规则被写成简单的字符串一样。
+
+
 * **Field Names : `field(name, rule)`** - This function assigns a *field name* to the child node(s) matched by the given rule. In the resulting syntax tree, you can then use that field name to access specific children.
 
 In addition to the `name` and `rules` fields, grammars have a few other optional public fields that influence the behavior of the parser.
+* **字段名称 : `field(name, rule)`** - 该函数为给定规则匹配的子节点分配一个*字段名称*。在生成的语法树中，你可以使用该字段名称访问特定的子节点。
+
+除了 `name` 和 `rules` 字段外，语法还具有一些影响解析器行为的其他可选公共字段。
 
 * **`extras`** - an array of tokens that may appear *anywhere* in the language. This is often used for whitespace and comments. The default value of `extras` is to accept whitespace. To control whitespace explicitly, specify `extras: $ => []` in your grammar.
+* **`extras`** - 一个可能出现在语言中的任何地方的标记数组。这通常用于空白和注释。extras 的默认值是接受空白符。如果需要显式控制空白符，可以在语法中指定 `extras: $ => []`。
 * **`inline`** - an array of rule names that should be automatically *removed* from the grammar by replacing all of their usages with a copy of their definition. This is useful for rules that are used in multiple places but for which you *don't* want to create syntax tree nodes at runtime.
+* **`inline`** - 一个规则名称的数组，这些规则会自动从语法中移除，并用其定义的副本替换所有使用它们的地方。这对于在多个地方使用但不希望在运行时创建语法树节点的规则非常有用。
 * **`conflicts`** - an array of arrays of rule names. Each inner array represents a set of rules that's involved in an *LR(1) conflict* that is *intended to exist* in the grammar. When these conflicts occur at runtime, Tree-sitter will use the GLR algorithm to explore all of the possible interpretations. If *multiple* parses end up succeeding, Tree-sitter will pick the subtree whose corresponding rule has the highest total *dynamic precedence*.
+* **`conflicts`** - 一个包含规则名称数组的数组。每个内部数组代表在语法中预期存在的LR(1) 冲突的规则集合。当这些冲突在运行时发生时，Tree-sitter 将使用 GLR 算法探索所有可能的解释。如果`多个`解析成功，Tree-sitter 将选择对应规则具有最高总`动态优先级`的子树。
 * **`externals`** - an array of token names which can be returned by an [*external scanner*](#external-scanners). External scanners allow you to write custom C code which runs during the lexing process in order to handle lexical rules (e.g. Python's indentation tokens) that cannot be described by regular expressions.
+* **`externals`** - 可以由[*external scanner*](#external-scanners)返回的标记名称数组。外部扫描器允许你编写在词法分析过程中运行的自定义 C 代码，以处理无法用正则表达式描述的词法规则（例如 Python 的缩进标记）。
 * **`precedences`** - an array of array of strings, where each array of strings defines named precedence levels in descending order. These names can be used in the `prec` functions to define precedence relative only to other names in the array, rather than globally. Can only be used with parse precedence, not lexical precedence.
+* * **`precedences`** - 一个字符串数组的数组，每个字符串数组定义降序排列的命名优先级级别。这些名称可以在 `prec` 函数中使用，以仅相对于数组中的其他名称定义优先级，而不是全局定义。只能用于解析优先级，不能用于词法优先级。
 * **`word`** - the name of a token that will match keywords for the purpose of the [keyword extraction](#keyword-extraction) optimization.
+* **`word`** - 将匹配关键字以进行关键字提取优化的标记名称。
 * **`supertypes`** an array of hidden rule names which should be considered to be 'supertypes' in the generated [*node types* file][static-node-types].
+* **`supertypes`** - 一个隐藏规则名称的数组，这些规则在生成的[节点类型文件][static-node-types]中应被视为'超类型'。
 
 ## Writing the Grammar
 
@@ -977,20 +1011,19 @@ bool tree_sitter_my_language_external_scanner_scan(
 
 ```
 
-#### Other External Scanner Details
+#### 其他外部扫描器细节
 
-If a token in the `externals` array is valid at a given position in the parse, the external scanner will be called first before anything else is done. This means the external scanner functions as a powerful override of Tree-sitter's lexing behavior, and can be used to solve problems that can't be cracked with ordinary lexical, parse, or dynamic precedence.
+如果在 `externals` 数组中的一个标记在解析的特定位置是有效的，那么在执行任何其他操作之前，将首先调用外部扫描器。这意味着外部扫描器函数作为 Tree-sitter 词法分析行为的强大覆盖，并且可以用于解决无法用普通的词法、解析或动态优先级解决的问题。
 
-If a syntax error is encountered during regular parsing, Tree-sitter's first action during error recovery will be to call the external scanner's `scan` function with all tokens marked valid. The scanner should detect this case and handle it appropriately. One simple method of detection is to add an unused token to the end of the `externals` array, for example `externals: $ => [$.token1, $.token2, $.error_sentinel]`, then check whether that token is marked valid to determine whether Tree-sitter is in error correction mode.
+如果在常规解析过程中遇到语法错误，Tree-sitter 在错误恢复期间的第一步操作将是使用所有标记为有效的标记调用外部扫描器的 `scan` 函数。扫描器应该检测到这种情况并适当地处理它。一个简单的检测方法是在 externals 数组的末尾添加一个未使用的标记，例如 `externals: $ => [$.token1, $.token2, $.error_sentinel]`，然后检查该标记是否标记为有效，以确定 Tree-sitter 是否处于错误校正模式。
 
-If you put terminal keywords in the `externals` array, for example `externals: $ => ['if', 'then', 'else']`, then any time those terminals are present in the grammar they will be tokenized by the external scanner. It is similar to writing `externals: [$.if_keyword, $.then_keyword, $.else_keyword]` then using `alias($.if_keyword, 'if')` in the grammar.
+如果将终结关键字放在 externals 数组中，例如 `externals: $ => ['if', 'then', 'else']`，那么每当这些终结关键字在语法中出现时，它们都将由外部扫描器进行标记。这类似于在语法中编写 `externals: [$.if_keyword, $.then_keyword, $.else_keyword]` 然后在语法中使用 `alias($.if_keyword, 'if')`。
 
-If in the `externals` array use literal keywords then lexing works in two steps, the external scanner will be called first and if it sets a resulting token and returns `true` then the token considered as recognized and Tree-sitter moves to a next token. But the external scanner may return `false` and in this case Tree-sitter fallbacks to the internal lexing mechanism.
+如果在 `externals` 数组中使用文字关键字，那么词法分析将分为两个步骤，首先将调用外部扫描器，如果它设置了一个结果标记并返回 `true`，那么该标记将被视为已识别，Tree-sitter 将转到下一个标记。但是，外部扫描器也可能返回 `false`，在这种情况下，Tree-sitter 将回退到内部词法分析机制。
 
-In case of some keywords defined in the `externals` array in a rule referencing form like `$.if_keyword` and there is no additional definition of that rule in the grammar rules, e.g., `if_keyword: $ => 'if'` then fallback to the internal lexer isn't possible because Tree-sitter doesn't know the actual keyword and it's fully the external scanner resposibilty to recognize such tokens.
+如果在 externals 数组中定义了一些以 `$.if_keyword` 形式引用的关键字，并且在语法规则中没有对该规则进行额外的定义，例如 `if_keyword: $ => 'if'`，那么回退到内部词法分析器是不可能的，因为 Tree-sitter 不知道实际的关键字，完全是外部扫描器的责任来识别这样的标记。
 
-External scanners are a common cause of infinite loops.
-Be very careful when emitting zero-width tokens from your external scanner, and if you consume characters in a loop be sure use the `eof` function to check whether you are at the end of the file.
+外部扫描器是导致无限循环的常见原因。在从外部扫描器发出零宽标记时要非常小心，并且如果在循环中消耗字符，请务必使用 eof 函数来检查是否已到达文件的末尾。
 
 [ambiguous-grammar]: https://en.wikipedia.org/wiki/Ambiguous_grammar
 [antlr]: https://www.antlr.org
