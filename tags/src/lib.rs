@@ -15,9 +15,11 @@ use std::{
 
 use memchr::memchr;
 use regex::Regex;
+use streaming_iterator::StreamingIterator;
 use thiserror::Error;
 use tree_sitter::{
-    Language, LossyUtf8, Parser, Point, Query, QueryCursor, QueryError, QueryPredicateArg, Tree,
+    Language, LossyUtf8, ParseOptions, Parser, Point, Query, QueryCursor, QueryError,
+    QueryPredicateArg, Tree,
 };
 
 const MAX_LINE_LEN: usize = 180;
@@ -100,7 +102,7 @@ struct LocalScope<'a> {
 
 struct TagsIter<'a, I>
 where
-    I: Iterator<Item = tree_sitter::QueryMatch<'a, 'a>>,
+    I: StreamingIterator<Item = tree_sitter::QueryMatch<'a, 'a>>,
 {
     matches: I,
     _tree: Tree,
@@ -197,7 +199,7 @@ impl TagsConfiguration {
                         && property
                             .value
                             .as_ref()
-                            .map_or(false, |v| v.as_ref() == "false")
+                            .is_some_and(|v| v.as_ref() == "false")
                     {
                         info.local_scope_inherits = false;
                     }
@@ -283,13 +285,31 @@ impl TagsContext {
             .set_language(&config.language)
             .map_err(|_| Error::InvalidLanguage)?;
         self.parser.reset();
-        unsafe { self.parser.set_cancellation_flag(cancellation_flag) };
-        let tree = self.parser.parse(source, None).ok_or(Error::Cancelled)?;
+        let tree = self
+            .parser
+            .parse_with_options(
+                &mut |i, _| {
+                    if i < source.len() {
+                        &source[i..]
+                    } else {
+                        &[]
+                    }
+                },
+                None,
+                Some(ParseOptions::new().progress_callback(&mut |_| {
+                    if let Some(cancellation_flag) = cancellation_flag {
+                        cancellation_flag.load(Ordering::SeqCst) != 0
+                    } else {
+                        false
+                    }
+                })),
+            )
+            .ok_or(Error::Cancelled)?;
 
         // The `matches` iterator borrows the `Tree`, which prevents it from being
         // moved. But the tree is really just a pointer, so it's actually ok to
         // move it.
-        let tree_ref = unsafe { mem::transmute::<_, &'static Tree>(&tree) };
+        let tree_ref = unsafe { mem::transmute::<&Tree, &'static Tree>(&tree) };
         let matches = self
             .cursor
             .matches(&config.query, tree_ref.root_node(), source);
@@ -316,7 +336,7 @@ impl TagsContext {
 
 impl<'a, I> Iterator for TagsIter<'a, I>
 where
-    I: Iterator<Item = tree_sitter::QueryMatch<'a, 'a>>,
+    I: StreamingIterator<Item = tree_sitter::QueryMatch<'a, 'a>>,
 {
     type Item = Result<Tag, Error>;
 

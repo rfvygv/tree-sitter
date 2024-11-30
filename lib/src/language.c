@@ -28,6 +28,10 @@ uint32_t ts_language_version(const TSLanguage *self) {
   return self->version;
 }
 
+const char *ts_language_name(const TSLanguage *self) {
+  return self->version >= LANGUAGE_VERSION_WITH_METADATA ? self->name : NULL;
+}
+
 uint32_t ts_language_field_count(const TSLanguage *self) {
   return self->field_count;
 }
@@ -43,7 +47,7 @@ void ts_language_table_entry(
     result->is_reusable = false;
     result->actions = NULL;
   } else {
-    assert(symbol < self->token_count);
+    ts_assert(symbol < self->token_count);
     uint32_t action_index = ts_language_lookup(self, state, symbol);
     const TSParseActionEntry *entry = &self->parse_actions[action_index];
     result->action_count = entry->entry.count;
@@ -138,6 +142,8 @@ TSSymbolType ts_language_symbol_type(
     return TSSymbolTypeRegular;
   } else if (metadata.visible) {
     return TSSymbolTypeAnonymous;
+  } else if (metadata.supertype) {
+    return TSSymbolTypeSupertype;
   } else {
     return TSSymbolTypeAuxiliary;
   }
